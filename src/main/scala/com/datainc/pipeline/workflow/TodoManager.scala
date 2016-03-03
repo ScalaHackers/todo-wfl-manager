@@ -61,7 +61,7 @@ class TodoManagerActor(workTimeout: FiniteDuration) extends PersistentActor with
   ClusterClientReceptionist(context.system).registerService(self)
 
   // persistenceId must include cluster role to support multiple masters
-  override def persistenceId: String = Cluster(context.system).selfRoles.find(_.startsWith("backend-")) match {
+  override def persistenceId: String = Cluster(context.system).selfRoles.find(_.startsWith("manager-")) match {
     case Some(role) ⇒ role + "-master"
     case None ⇒ "master"
   }
