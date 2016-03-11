@@ -3,6 +3,7 @@ package com.datainc.pipeline.workflow
 /**
   * Created by hdong on 2/26/2016.
   */
+// for TxsTable
 import scala.util.Random
 
 case class Todo(txsId: String, state: Int, completed: Boolean, path: String)

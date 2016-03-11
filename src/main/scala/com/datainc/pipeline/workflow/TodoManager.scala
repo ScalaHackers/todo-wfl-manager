@@ -150,7 +150,27 @@ class TodoManagerActor(workTimeout: FiniteDuration) extends PersistentActor with
           // Ack back to original sender
           sender() ! TodoManagerActor.Ack(work.workId)
           workState = workState.updated(event)
-          notifyWorkers()
+          //notifyWorkers()
+          //create a txsActor
+        }
+      }
+
+    case todoAdd: TodoManagerActor.Add =>
+      // idempotent
+      // check workid in txsTable DB
+      if (workState.isAccepted(work.workId)) {
+        sender() ! TodoManagerActor.Ack(work.workId)
+      } else {
+        log.info("Accepted work: {}", work.workId)
+        persist(WorkAccepted(work)) { event ⇒
+          // Ack back to original sender
+          sender() ! TodoManagerActor.Ack(work.workId)
+          workState = workState.updated(event)
+          //notifyWorkers()
+          //create a txsActor
+          val txsActor:ActorRef = system.actorOf(Props(new TxsActor()))
+          //pass workerMap to txsActor
+          txsActor ! workers
         }
       }
 
